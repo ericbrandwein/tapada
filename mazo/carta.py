@@ -7,6 +7,7 @@ class Palo(Enum):
     PICA = 4
 
 class Carta:
-    def __init__(self, palo, numero):
+    def __init__(self, palo, numero, es_joker=False):
         self.palo = palo
         self.numero = numero
+        self.es_joker = es_joker
