@@ -9,7 +9,7 @@ COLOR_ROJO = (255, 0, 0)
 COLOR_NEGRO = (0, 0, 0)
 COLOR_CARTA_BACK = (72, 107, 165)
 
-font_filename = pygame.font.match_font('dejavuserif')
+font_filename = pygame.font.match_font('dejavusans')
 FONT_CARTA = pygame.font.Font(font_filename, 14)
 
 
