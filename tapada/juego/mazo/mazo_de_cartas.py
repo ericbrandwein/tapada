@@ -1,5 +1,5 @@
 from random import shuffle
-from carta import Palo, Carta
+from .carta import Palo, Carta
 
 
 class Mazo:

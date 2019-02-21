@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
-from .mazo.mazo import MazoInicial
-from .tapada import Tapada
-from tapada.accion_jugador import Fuente, Destino
-from .escalera import Escalera
+from mazo.mazo_de_cartas import MazoInicial
+from tapada import Tapada
+from accion_jugador import Fuente, Destino
+from escalera import Escalera
 
 
 class Juego:
