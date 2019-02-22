@@ -2,7 +2,7 @@ import sys
 import pygame
 
 from .cartas import card_renderer
-
+from .cartas.carta_ui import CartaUi
 from ..juego.mazo.carta import Carta, Palo
 
 from .pilones import PilonesContainer
@@ -49,6 +49,18 @@ class JuegoInteractivo:
 
     def empezar(self):
         self.screen = pygame.display.set_mode(self.size)
+
+        carta = Carta(Palo.DIAMANTE, 12)
+        carta_ui = CartaUi(carta)
+        self.pilon_containers[0][0].agregar_carta(carta_ui)
+        carta = Carta(Palo.TREBOL, 1)
+        carta_ui = CartaUi(carta)
+        self.pilon_containers[0][0].agregar_carta(carta_ui)
+        carta_ui = CartaUi(carta)
+        self.pilon_containers[1][0].agregar_carta(carta_ui)
+        carta_ui = CartaUi(carta)
+        self.pilon_containers[1][0].agregar_carta(carta_ui)
+
         self._render()
 
         # dragging = False
@@ -76,11 +88,7 @@ class JuegoInteractivo:
         """Renderiza todos los elementos de la pantalla necesarios."""
         self._render_background()
         self._render_mazo()
-
-        # carta = Carta(Palo.TREBOL, 13)
-        # card_surface = card_renderer.render(carta)
-        # card_rect = pygame.Rect((10, 10), card_renderer.DIMENSIONES_CARTA)
-        # self.screen.blit(card_surface, card_rect)
+        self._render_pilones()
 
         pygame.display.flip()
 
@@ -101,4 +109,7 @@ class JuegoInteractivo:
     def _render_mazo(self):
         self.screen.blit(self.card_back_surface, self.mazo_rect)
 
-    # def _render_pilones(self):
+    def _render_pilones(self):
+        for container in self.pilon_containers:
+            for pilon in container:
+                pilon.render(self.screen)
