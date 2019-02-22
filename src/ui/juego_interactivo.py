@@ -14,7 +14,7 @@ pygame.init()
 
 
 class JuegoInteractivo:
-    ESPACIO_ENTRE_ESCALERAS_Y_PILONES = 24
+    ESPACIO_ENTRE_ESCALERAS_Y_PILONES = 32
 
     background_surface = None
     dragging_card = None
@@ -51,6 +51,12 @@ class JuegoInteractivo:
         carta_ui = CartaUi(carta)
         self.pilon_containers[1][0].agregar_carta(carta_ui)
 
+        carta_ui = CartaUi(carta)
+        self.escaleras_container.agregar_escalera(carta_ui)
+
+        carta_ui = CartaUi(carta)
+        self.escaleras_container.agregar_escalera(carta_ui)
+
         self._render()
 
     def correr_turno(self):
@@ -86,7 +92,8 @@ class JuegoInteractivo:
     def _init_escaleras(self):
         center = (self.width / 2, self.height / 2)
         self.escaleras_container = EscalerasContainer(
-            center, self.card_rect, self.color_placeholder)
+            center, self.card_rect,
+            self.color_placeholder, self.background_color)
 
     def _posicionar_pilones(self):
         card_height = self.card_rect.h
