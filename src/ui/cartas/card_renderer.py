@@ -1,6 +1,6 @@
 import pygame
 
-from juego.mazo.carta import Palo
+from ...juego.mazo.carta import Palo
 
 pygame.init()
 
@@ -13,21 +13,18 @@ font_filename = pygame.font.match_font('dejavusans')
 FONT_CARTA = pygame.font.Font(font_filename, 14)
 
 
-DIMENSIONES_CARTA = 70, 100
-
-
 class RenderizadorConPalo:
     def __init__(self, simbolo_palo, color):
         self.simbolo_palo = simbolo_palo
         self.color = color
 
-    def render(self, numero):
-        card_surface = pygame.Surface(DIMENSIONES_CARTA)
+    def render(self, numero, dimensiones):
+        card_surface = pygame.Surface(dimensiones)
         card_surface.fill(COLOR_CARTA)
 
         texto = '{} {}'.format(numero, self.simbolo_palo)
         card_text = FONT_CARTA.render(texto, True, self.color)
-        card_surface.blit(card_text, (2, 2))
+        card_surface.blit(card_text, (4, 4))
         return card_surface
 
 
@@ -39,19 +36,20 @@ RENDERIZADORES = {
 }
 
 
-def render(carta):
-    return RENDERIZADORES[carta.palo].render(carta.numero)
+def render(carta, dimensiones):
+    return RENDERIZADORES[carta.palo].render(carta.numero, dimensiones)
 
 
-def render_back():
-    card_surface = pygame.Surface(DIMENSIONES_CARTA)
+def render_back(dimensiones):
+    """Renderiza una Surface con la parte trasera de una carta."""
+    card_surface = pygame.Surface(dimensiones)
     card_surface.fill(COLOR_CARTA)
 
     padding = 5
     min_x = padding
-    max_x = DIMENSIONES_CARTA[0] - padding - 1
+    max_x = dimensiones[0] - padding - 1
     min_y = padding
-    max_y = DIMENSIONES_CARTA[1] - padding - 1
+    max_y = dimensiones[1] - padding - 1
 
     back_center_rect = pygame.rect.Rect(
         min_x, min_y, max_x - min_x + 1, max_y - min_y + 1)
