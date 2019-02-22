@@ -13,7 +13,7 @@ pygame.init()
 class JuegoInteractivo:
     ESPACIO_ENTRE_ESCALERAS_Y_PILONES = 16
 
-    def __init__(self, referi, size=(1000, 700),
+    def __init__(self, referi, size=(1366, 768),
                  background_color=pygame.Color(70, 112, 65), card_size=(70, 100)):
         self.referi = referi
         self.size = self.width, self.height = size
@@ -35,6 +35,8 @@ class JuegoInteractivo:
 
         self._posicionar_pilones()
 
+        self.dragging_card = None
+
     def _posicionar_pilones(self):
         card_height = self.card_rect.h
         midtop_pilones_arriba = (self.width / 2, self.height / 2 -
@@ -52,8 +54,9 @@ class JuegoInteractivo:
         self.screen = pygame.display.set_mode(self.size)
 
         carta = Carta(Palo.DIAMANTE, 12)
-        carta_ui = CartaUi(carta)
-        self.pilon_containers[0][0].agregar_carta(carta_ui)
+        for i in range(12):
+            carta_ui = CartaUi(carta)
+            self.pilon_containers[0][0].agregar_carta(carta_ui)
         carta = Carta(Palo.TREBOL, 1)
         carta_ui = CartaUi(carta)
         self.pilon_containers[0][0].agregar_carta(carta_ui)
@@ -64,32 +67,29 @@ class JuegoInteractivo:
 
         self._render()
 
-        # dragging = False
-        # while True:
-        #     for event in pygame.event.get():
-        #         if event.type == pygame.QUIT:
-        #             sys.exit()
+    def correr_turno(self):
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    sys.exit()
 
-        #         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-        #             mouse_pos = pygame.mouse.get_pos()
-        #             if card_rect.collidepoint(mouse_pos):
-        #                 dragging = True
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    mouse_pos = event.pos
+                    self.dragging_card = self._drag_card_under(mouse_pos)
 
-        #         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-        #             dragging = False
+                if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                    self.dragging_card = None
 
-        #     if dragging:
-        #         card_rect.center = pygame.mouse.get_pos()
-        #         screen.fill(background_color)
-        #         screen.blit(card_surface, card_rect)
-        #         screen.blit(card_back_surface, (width / 2, height / 2))
-        #         pygame.display.flip()
+            if self.dragging_card:
+                self.dragging_card.rect.center = pygame.mouse.get_pos()
+                self._render()
 
     def _render(self):
         """Renderiza todos los elementos de la pantalla necesarios."""
         self._render_background()
         self._render_mazo()
         self._render_pilones()
+        self._render_dragging_card()
 
         pygame.display.flip()
 
@@ -113,3 +113,17 @@ class JuegoInteractivo:
     def _render_pilones(self):
         for container in self.pilon_containers:
             container.render(self.screen)
+
+    def _render_dragging_card(self):
+        if self.dragging_card:
+            self.dragging_card.render(self.screen)
+
+    def _drag_card_under(self, position):
+        jugador_actual = self.referi.jugador_actual()
+        for pilon in self.pilon_containers[jugador_actual]:
+            if pilon:
+                card_rect = pilon.top().rect
+                if card_rect.collidepoint(position):
+                    return pilon.pop()
+
+        return None

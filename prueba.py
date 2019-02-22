@@ -8,7 +8,6 @@ class ReferiPrueba(Referi):
         return 0
 
 
-JuegoInteractivo(ReferiPrueba()).empezar()
-
-while True:
-    pass
+juego = JuegoInteractivo(ReferiPrueba())
+juego.empezar()
+juego.correr_turno()

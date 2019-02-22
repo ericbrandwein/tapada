@@ -39,7 +39,7 @@ class PilonUi(Sequence):
         return self.carta_uis.pop()
 
     def top(self):
-        return self.carta_uis[len(self) - 1]
+        return self.carta_uis[len(self.carta_uis) - 1]
 
     def render(self, surface):
         for carta_ui in self.carta_uis:
