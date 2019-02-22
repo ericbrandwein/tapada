@@ -13,7 +13,7 @@ pygame.init()
 class JuegoInteractivo:
     ESPACIO_ENTRE_ESCALERAS_Y_PILONES = 16
 
-    def __init__(self, referi, size=(1000, 500),
+    def __init__(self, referi, size=(1000, 700),
                  background_color=pygame.Color(70, 112, 65), card_size=(70, 100)):
         self.referi = referi
         self.size = self.width, self.height = size
@@ -29,7 +29,8 @@ class JuegoInteractivo:
         self.background_surface = None
 
         self.pilon_containers = [
-            PilonesContainer(self.card_rect) for i in range(2)
+            PilonesContainer(self.card_rect),
+            PilonesContainer(self.card_rect, up_orientation=True)
         ]
 
         self._posicionar_pilones()
@@ -111,5 +112,4 @@ class JuegoInteractivo:
 
     def _render_pilones(self):
         for container in self.pilon_containers:
-            for pilon in container:
-                pilon.render(self.screen)
+            container.render(self.screen)

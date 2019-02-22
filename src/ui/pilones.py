@@ -7,11 +7,12 @@ pygame.init()
 
 
 class PilonUi(Sequence):
-    def __init__(self, rect, card_rect, padding_entre_cartas=24):
+    def __init__(self, rect, card_rect, up_orientation=False, padding_entre_cartas=24):
         self.carta_uis = []
         self.rect = rect
         self.card_rect = card_rect
         self.padding_entre_cartas = padding_entre_cartas
+        self.up_orientation = up_orientation
 
     def __getitem__(self, index):
         return self.carta_uis[index]
@@ -25,8 +26,11 @@ class PilonUi(Sequence):
             pos_nueva_carta = self.rect.topleft
         else:
             rect_ultimo = self.top().rect
-            pos_nueva_carta = (rect_ultimo.x, rect_ultimo.y +
-                               self.padding_entre_cartas)
+            if self.up_orientation:
+                y = rect_ultimo.y - self.padding_entre_cartas
+            else:
+                y = rect_ultimo.y + self.padding_entre_cartas
+            pos_nueva_carta = (rect_ultimo.x, y)
 
         carta_ui.rect.topleft = pos_nueva_carta
         self.carta_uis.append(carta_ui)
@@ -41,31 +45,49 @@ class PilonUi(Sequence):
         for carta_ui in self.carta_uis:
             carta_ui.render(surface)
 
-    @property
-    def midtop(self):
-        return self.rect.midtop
+    def set_orientation(self, up):
+        """Si up es True, la orientación de las cartas será para arriba."""
+        if up != self.up_orientation:
+            self.up_orientation = up
+            self._reorganizar_cartas()
 
-    @midtop.setter
-    def midtop(self, point):
-        self.rect.midtop = point
+    @property
+    def topleft(self):
+        return self.rect.topleft
+
+    @topleft.setter
+    def topleft(self, point):
+        self.rect.topleft = point
+        self._reorganizar_cartas()
+
+    def _reorganizar_cartas(self):
+        x = self.rect.x
+        y = self.rect.y
         for i, carta_ui in enumerate(self.carta_uis):
-            carta_point = (point[0], point[1] + self.padding_entre_cartas * i)
-            carta_ui.rect.midtop = carta_point
+            if i > 0:
+                if self.up_orientation:
+                    y -= self.padding_entre_cartas
+                else:
+                    y += self.padding_entre_cartas
+            carta_ui.rect.topleft = (x, y)
 
 
 class PilonesContainer(Sequence):
-    def __init__(self, card_rect, cantidad_pilones=3, separacion_entre_pilones=24):
+    def __init__(self, card_rect, up_orientation=False, cantidad_pilones=3, separacion_entre_pilones=24):
         self.card_rect = card_rect
         self.separacion_entre_pilones = separacion_entre_pilones
-        self.width = card_rect.width * cantidad_pilones + \
+        self.up_orientation = up_orientation
+
+        width = card_rect.width * cantidad_pilones + \
             separacion_entre_pilones * (cantidad_pilones - 1)
+        self.rect = pygame.Rect(0, 0, width, card_rect.height)
 
         self.pilones = []
         for i in range(cantidad_pilones):
             pilon_rect = card_rect.copy()
-            pilon_rect.y = 0
-            pilon_rect.x = i * (card_rect.width + separacion_entre_pilones)
-            self.pilones.append(PilonUi(pilon_rect, card_rect))
+            self.pilones.append(PilonUi(pilon_rect, card_rect, up_orientation))
+
+        self._reorganizar_pilones()
 
     def __getitem__(self, index):
         return self.pilones[index]
@@ -73,20 +95,33 @@ class PilonesContainer(Sequence):
     def __len__(self):
         return len(self.pilones)
 
+    def set_orientation(self, up):
+        """Si up es True, la orientación de las cartas será para arriba."""
+        if up != self.up_orientation:
+            self.up_orientation = up
+            self._reorganizar_pilones()
+
+    def render(self, surface):
+        for pilon in self.pilones:
+            pilon.render(surface)
+
     @property
     def midtop(self):
-        cantidad_pilones = len(self.pilones)
-        indice_medio = cantidad_pilones // 2
-        return self.pilones[indice_medio].rect.midtop
+        return self.rect.midtop
 
     @midtop.setter
     def midtop(self, point):
+        self.rect.midtop = point
+        self._reorganizar_pilones()
+
+    def _reorganizar_pilones(self):
+        diferencia_x = self.card_rect.width + self.separacion_entre_pilones
         cantidad_pilones = len(self.pilones)
-        indice_medio = cantidad_pilones // 2
-        self.pilones[indice_medio].rect.midtop = point
         for i in range(cantidad_pilones):
-            if i != indice_medio:
-                y = point[1]
-                x = point[0] + (i - indice_medio) * \
-                    (self.card_rect.width + self.separacion_entre_pilones)
-                self.pilones[i].midtop = x, y
+            if self.up_orientation:
+                x = self.rect.x + (cantidad_pilones - i - 1) * diferencia_x
+            else:
+                x = self.rect.x + i * diferencia_x
+
+            self.pilones[i].topleft = (x, self.rect.y)
+            self.pilones[i].set_orientation(self.up_orientation)
