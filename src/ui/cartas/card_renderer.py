@@ -9,11 +9,20 @@ COLOR_ROJO = (255, 0, 0)
 COLOR_NEGRO = (0, 0, 0)
 COLOR_CARTA_BACK = (72, 107, 165)
 
-font_filename = pygame.font.match_font('dejavusans')
-FONT_CARTA = pygame.font.Font(font_filename, 14)
+_font_filename = pygame.font.match_font('dejavusans')
+FONT_CARTA = pygame.font.Font(_font_filename, 14)
+
+NUMERO_A_LETRA = {
+    1: 'A',
+    11: 'J',
+    12: 'Q',
+    13: 'K',
+}
 
 
 class RenderizadorConPalo:
+    padding_texto = 4
+
     def __init__(self, simbolo_palo, color):
         self.simbolo_palo = simbolo_palo
         self.color = color
@@ -22,9 +31,20 @@ class RenderizadorConPalo:
         card_surface = pygame.Surface(dimensiones)
         card_surface.fill(COLOR_CARTA)
 
+        if numero in NUMERO_A_LETRA:
+            numero = NUMERO_A_LETRA[numero]
+
         texto = '{} {}'.format(numero, self.simbolo_palo)
         card_text = FONT_CARTA.render(texto, True, self.color)
-        card_surface.blit(card_text, (4, 4))
+        card_surface.blit(card_text, (self.padding_texto, self.padding_texto))
+
+        card_text = pygame.transform.rotate(card_text, 180)
+        text_position = (
+            card_surface.get_width() - card_text.get_width() - self.padding_texto,
+            card_surface.get_height() - card_text.get_height() - self.padding_texto
+        )
+        card_surface.blit(card_text, text_position)
+
         return card_surface
 
 

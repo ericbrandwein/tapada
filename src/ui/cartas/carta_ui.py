@@ -1,6 +1,6 @@
 import pygame
 
-import card_renderer
+from . import card_renderer
 pygame.init()
 
 
