@@ -9,7 +9,7 @@ class Palo(Enum):
 
 
 class Carta:
-    def __init__(self, palo, numero, es_joker):
+    def __init__(self, palo, numero, es_joker=False):
         self.palo = palo
         self.numero = numero
         self.es_joker = es_joker

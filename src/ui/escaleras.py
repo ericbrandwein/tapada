@@ -57,23 +57,16 @@ class EscalerasContainer(Sequence):
 
     def _actualizar_posiciones(self):
         cant_escaleras = len(self.escaleras)
-        if cant_escaleras > 0:
-            ancho_escaleras = cant_escaleras * self.nueva_escalera_rect.width \
-                + (cant_escaleras - 1) * self.ESPACIO_ENTRE_ESCALERAS
-            rect_escaleras = pygame.Rect(
-                0, 0, ancho_escaleras, self.nueva_escalera_rect.height)
-            rect_escaleras.center = self.center
+        ancho_escaleras = (cant_escaleras + 1) * self.nueva_escalera_rect.width \
+            + cant_escaleras * self.ESPACIO_ENTRE_ESCALERAS
+        rect_escaleras = pygame.Rect(
+            0, 0, ancho_escaleras, self.nueva_escalera_rect.height)
+        rect_escaleras.center = self.center
 
-            y = rect_escaleras.y
-            x = rect_escaleras.x
-            for escalera in self.escaleras:
-                escalera.rect.topleft = (x, y)
-                x += self.nueva_escalera_rect.width + self.ESPACIO_ENTRE_ESCALERAS
+        y = rect_escaleras.y
+        x = rect_escaleras.x
+        for escalera in self.escaleras:
+            escalera.rect.topleft = (x, y)
+            x += self.nueva_escalera_rect.width + self.ESPACIO_ENTRE_ESCALERAS
 
-            midleft = (
-                rect_escaleras.midright[0] + self.ESPACIO_ENTRE_ESCALERAS,
-                rect_escaleras.midright[1]
-            )
-            self.nueva_escalera_rect.midleft = midleft
-        else:
-            self.nueva_escalera_rect.center = self.center
+        self.nueva_escalera_rect.midright = rect_escaleras.midright

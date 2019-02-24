@@ -14,7 +14,7 @@ pygame.init()
 
 
 class JuegoInteractivo:
-    ESPACIO_ENTRE_ESCALERAS_Y_PILONES = 32
+    ESPACIO_ENTRE_ESCALERAS_Y_PILONES = 48
 
     background_surface = None
     dragging_card = None
