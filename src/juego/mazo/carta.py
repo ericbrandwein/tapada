@@ -1,5 +1,5 @@
-from dataclasses import dataclass
 from enum import Enum
+
 
 class Palo(Enum):
     DIAMANTE = 1
@@ -7,8 +7,9 @@ class Palo(Enum):
     TREBOL = 3
     PICA = 4
 
-@dataclass
+
 class Carta:
-    palo: Palo
-    numero: int
-    es_joker: bool = False
+    def __init__(self, palo, numero, es_joker):
+        self.palo = palo
+        self.numero = numero
+        self.es_joker = es_joker

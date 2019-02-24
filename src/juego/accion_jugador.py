@@ -1,5 +1,4 @@
 from enum import Enum
-from dataclasses import dataclass
 
 
 class Fuente(Enum):
@@ -14,9 +13,9 @@ class Destino(Enum):
     TAPADA_CONTRARIA = 2
 
 
-@dataclass
 class AccionJugador:
-    fuente: Fuente
-    destino: Destino
-    indice_fuente: int = 0
-    indice_destino: int = 0
+    def __init__(self, fuente, destino, indice_fuente=0, indice_destino=0):
+        self.fuente = fuente
+        self.destino = destino
+        self.indice_fuente = indice_fuente
+        self.indice_destino = indice_destino

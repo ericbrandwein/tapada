@@ -1,5 +1,3 @@
-from dataclasses import dataclass
-
 from mazo.mazo_de_cartas import MazoInicial
 from tapada import Tapada
 from accion_jugador import Fuente, Destino
@@ -73,7 +71,7 @@ class Juego:
             if indice_fuente >= len(self.cartas_jugadores[indice_jugador]):
                 raise ValueError(
                     "La carta número {} no es una de la mano del jugador {}."
-                        .format(indice_fuente, indice_jugador)
+                    .format(indice_fuente, indice_jugador)
                 )
             carta = self.cartas_jugadores[indice_jugador].pop(indice_fuente)
 
@@ -81,7 +79,7 @@ class Juego:
             if not self.tapadas[indice_jugador]:
                 raise ValueError(
                     "No hay ninguna carta en la tapada del jugador {}."
-                        .format(indice_jugador)
+                    .format(indice_jugador)
                 )
             carta = self.tapadas[indice_jugador].pop()
 
@@ -89,7 +87,7 @@ class Juego:
             if not self.pilones[indice_jugador][indice_fuente]:
                 raise ValueError(
                     "No hay ninguna carta en el pilón {} del jugador {}."
-                        .format(indice_fuente, indice_jugador)
+                    .format(indice_fuente, indice_jugador)
                 )
             carta = self.pilones[indice_jugador][indice_fuente].pop()
 
@@ -113,12 +111,14 @@ class Juego:
         indice_contrario = self._jugador_contrario(indice_jugador)
         return InformacionParaJugador(
             cartas_en_mano=self.cartas_jugadores[indice_jugador],
-            cant_cartas_en_mano_contrario=
-                len(self.cartas_jugadores[indice_contrario]),
+            cant_cartas_en_mano_contrario=len(
+                self.cartas_jugadores[indice_contrario]),
             tapadas_descubiertas=self.tapadas[indice_jugador].cartas_descubiertas,
             tapadas_descubiertas_contrario=self.tapadas[indice_contrario].cartas_descubiertas,
-            cant_tapadas_cubiertas=len(self.tapadas[indice_jugador].cartas_cubiertas),
-            cant_tapadas_cubiertas_contrario=len(self.tapadas[indice_contrario].cartas_cubiertas),
+            cant_tapadas_cubiertas=len(
+                self.tapadas[indice_jugador].cartas_cubiertas),
+            cant_tapadas_cubiertas_contrario=len(
+                self.tapadas[indice_contrario].cartas_cubiertas),
             pilones=self.pilones[indice_jugador],
             pilones_contrario=self.pilones[indice_contrario],
             escaleras=self.escaleras
@@ -179,15 +179,17 @@ class Juego:
         )
 
 
-
-@dataclass
 class InformacionParaJugador:
-    cartas_en_mano = []
-    cant_cartas_en_mano_contrario = 0
-    tapadas_descubiertas = []
-    tapadas_descubiertas_contrario = []
-    cant_tapadas_cubiertas = 0
-    cant_tapadas_cubiertas_contrario = 0
-    pilones = []
-    pilones_contrario = []
-    escaleras = []
+    def __init__(self, cartas_en_mano, cant_cartas_en_mano_contrario,
+                 tapadas_descubiertas, tapadas_descubiertas_contrario,
+                 cant_tapadas_cubiertas, cant_tapadas_cubiertas_contrario,
+                 pilones, pilones_contrario, escaleras):
+        self.cartas_en_mano = cartas_en_mano
+        self.cant_cartas_en_mano_contrario = cant_cartas_en_mano_contrario
+        self.tapadas_descubiertas = tapadas_descubiertas
+        self.tapadas_descubiertas_contrario = tapadas_descubiertas_contrario
+        self.cant_tapadas_cubiertas = cant_tapadas_cubiertas
+        self.cant_tapadas_cubiertas_contrario = cant_tapadas_cubiertas_contrario
+        self.pilones = pilones
+        self.pilones_contrario = pilones_contrario
+        self.escaleras = escaleras
