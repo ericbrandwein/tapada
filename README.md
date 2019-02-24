@@ -5,4 +5,6 @@ de naipes francesa.
 
 ## Dependencias
 
+- Python 3.7
+- Pygame
 - font DejaVu
