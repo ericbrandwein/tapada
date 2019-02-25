@@ -18,3 +18,6 @@ class CartaUi:
 
     def render(self, surface):
         surface.blit(self.surface, self.rect)
+
+    def check_collision(self, point):
+        return self.rect.collidepoint(point)

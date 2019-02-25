@@ -7,6 +7,8 @@ pygame.init()
 
 class EscalerasContainer(Sequence):
     ESPACIO_ENTRE_ESCALERAS = 24
+    NUEVA_ESCALERA_INDEX = -1
+    NO_COLLISION = -2
 
     escaleras = []
 
@@ -38,6 +40,16 @@ class EscalerasContainer(Sequence):
 
         for escalera in self.escaleras:
             escalera.render(surface)
+
+    def check_collision(self, point):
+        for indice, carta in enumerate(self.escaleras):
+            if carta.check_collision(point):
+                return indice
+
+        if self.nueva_escalera_rect.collidepoint(point):
+            return self.NUEVA_ESCALERA_INDEX
+
+        return self.NO_COLLISION
 
     def _draw_nueva_escalera_rect(self, size, color_placeholder, color_plus):
         self.nueva_escalera_surface = pygame.Surface(size)

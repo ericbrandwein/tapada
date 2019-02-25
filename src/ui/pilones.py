@@ -51,6 +51,12 @@ class PilonUi(Sequence):
             self.up_orientation = up
             self._reorganizar_cartas()
 
+    def check_collision(self, point):
+        if len(self) > 0:
+            return self.top().check_collision(point)
+        else:
+            return self.rect.collidepoint(point)
+
     @property
     def topleft(self):
         return self.rect.topleft
@@ -104,6 +110,12 @@ class PilonesContainer(Sequence):
     def render(self, surface):
         for pilon in self.pilones:
             pilon.render(surface)
+
+    def check_collision(self, point):
+        for indice, pilon in enumerate(self.pilones):
+            if pilon.check_collision(point):
+                return indice
+        return -1
 
     @property
     def midtop(self):

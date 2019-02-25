@@ -40,7 +40,7 @@ class JuegoInteractivo:
         self.screen = pygame.display.set_mode(self.size)
 
         carta = Carta(Palo.DIAMANTE, 12)
-        for i in range(12):
+        for i in range(6):
             carta_ui = CartaUi(carta)
             self.pilon_containers[0][0].agregar_carta(carta_ui)
         carta = Carta(Palo.TREBOL, 1)
@@ -71,11 +71,13 @@ class JuegoInteractivo:
 
                 if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                     mouse_pos = event.pos
-                    self._release_card(mouse_pos)
+                    if self.dragging_card:
+                        self._release_card(mouse_pos)
 
             if self.dragging_card:
                 self.dragging_card.rect.center = pygame.mouse.get_pos()
-                self._render()
+
+            self._render()
 
     def _init_mazo(self):
         self.mazo_rect = self.card_rect.copy()
@@ -148,28 +150,68 @@ class JuegoInteractivo:
         surface.fill(self.color_placeholder, rect)
 
     def _drag_card_under(self, position):
-        jugador_actual = self.referi.jugador_actual()
-        for indice, pilon in enumerate(self.pilon_containers[jugador_actual]):
-            if pilon:
-                card_rect = pilon.top().rect
-                if card_rect.collidepoint(position):
-                    self.dragging_card_origin = Fuente.PILON
-                    self.dragging_card_origin_index = indice
-                    self.dragging_card = pilon.pop()
-                    break
+        pilon_colisionado = self._check_pilones_collision(position)
+        if pilon_colisionado >= 0:
+            self.dragging_card_origin = Fuente.PILON
+            self.dragging_card_origin_index = pilon_colisionado
+            jugador_actual = self.referi.jugador_actual()
+            pilon_container = self.pilon_containers[jugador_actual]
+            self.dragging_card = pilon_container[pilon_colisionado].pop()
 
     def _release_card(self, position):
-        self._get_card_destination(position)
+        destino = self._get_card_destination(position)
+
+        if destino:
+            tipo_destino = destino[0]
+            indice_destino = destino[1]
+
+            accion_jugador = AccionJugador(
+                self.dragging_card_origin, self.dragging_card_origin_index,
+                tipo_destino, indice_destino
+            )
+            if self.referi.ejecutar_jugada(accion_jugador):
+                self._place_dragging_card(tipo_destino, indice_destino)
+            else:
+                self._return_dragging_card()
+        else:
+            self._return_dragging_card()
 
         self.dragging_card = None
         self.dragging_card_origin = None
+        self.dragging_card_origin_index = None
+
+    def _place_dragging_card(self, tipo_destino, indice_destino):
+        jugador_actual = self.referi.jugador_actual()
+        if tipo_destino == Destino.PILON:
+            pilon_destino = self.pilon_containers[jugador_actual][indice_destino]
+            pilon_destino.agregar_carta(self.dragging_card)
+        elif tipo_destino == Destino.ESCALERA:
+            if indice_destino == EscalerasContainer.NUEVA_ESCALERA_INDEX:
+                self.escaleras_container.agregar_escalera(
+                    self.dragging_card)
+            else:
+                self.escaleras_container.agregar_carta(
+                    indice_destino, self.dragging_card)
+
+    def _return_dragging_card(self):
+        jugador_actual = self.referi.jugador_actual()
+        if self.dragging_card_origin == Fuente.PILON:
+            pilon_container = self.pilon_containers[jugador_actual]
+            pilon = pilon_container[self.dragging_card_origin_index]
+            pilon.agregar_carta(self.dragging_card)
 
     def _get_card_destination(self, position):
+        pilon_colisionado = self._check_pilones_collision(position)
+        if pilon_colisionado >= 0:
+            return Destino.PILON, pilon_colisionado
+
+        escalera_colisionada = self.escaleras_container.check_collision(
+            position)
+        if escalera_colisionada != EscalerasContainer.NO_COLLISION:
+            return Destino.ESCALERA, escalera_colisionada
+
+        return None
+
+    def _check_pilones_collision(self, position):
         jugador_actual = self.referi.jugador_actual()
-        for pilon in self.pilon_containers[jugador_actual]:
-            if pilon:
-                card_rect = pilon.top().rect
-                if card_rect.collidepoint(position):
-                    self.dragging_card_origin = pilon
-                    self.dragging_card = pilon.pop()
-                    break
+        return self.pilon_containers[jugador_actual].check_collision(position)
