@@ -15,6 +15,9 @@ class Destino(Enum):
 
 class AccionJugador:
     def __init__(self, fuente, destino, indice_fuente=0, indice_destino=0):
+        """
+        Si el destino es ESCALERA y el indice_destino es < 0, se crea una nueva.
+        """
         self.fuente = fuente
         self.destino = destino
         self.indice_fuente = indice_fuente
