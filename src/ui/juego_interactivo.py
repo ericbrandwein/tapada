@@ -61,6 +61,7 @@ class JuegoInteractivo:
 
     def correr_turno(self):
         while True:
+            should_render = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
@@ -73,11 +74,14 @@ class JuegoInteractivo:
                     mouse_pos = event.pos
                     if self.dragging_card:
                         self._release_card(mouse_pos)
+                        should_render = True
 
             if self.dragging_card:
                 self.dragging_card.rect.center = pygame.mouse.get_pos()
+                should_render = True
 
-            self._render()
+            if should_render:
+                self._render()
 
     def _init_mazo(self):
         self.mazo_rect = self.card_rect.copy()
