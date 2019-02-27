@@ -233,6 +233,9 @@ class JuegoInteractivo:
             pilon_container = self.pilon_containers[self.jugador_actual]
             pilon = pilon_container[self.dragging_card_origin_index]
             pilon.agregar_carta(self.dragging_card)
+        elif self.dragging_card_origin == Fuente.TAPADA:
+            tapada = self.tapadas[self.jugador_actual]
+            tapada.agregar_carta(self.dragging_card)
 
     def _get_card_destination(self, position):
         pilon_colisionado = self._check_pilones_collision(position)
