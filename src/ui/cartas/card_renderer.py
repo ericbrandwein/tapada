@@ -8,6 +8,8 @@ COLOR_CARTA = (255, 255, 255)
 COLOR_ROJO = (255, 0, 0)
 COLOR_NEGRO = (0, 0, 0)
 COLOR_CARTA_BACK = (72, 107, 165)
+COLOR_BORDE = pygame.Color(0, 0, 0)
+ANCHO_BORDE = 1
 
 _font_filename = pygame.font.match_font('dejavusans')
 FONT_CARTA = pygame.font.Font(_font_filename, 14)
@@ -18,6 +20,11 @@ NUMERO_A_LETRA = {
     12: 'Q',
     13: 'K',
 }
+
+
+def _dibujar_borde(card_surface, dimensiones_carta):
+    rect_borde = pygame.Rect((0, 0), dimensiones_carta)
+    pygame.draw.rect(card_surface, COLOR_BORDE, rect_borde, ANCHO_BORDE)
 
 
 class RenderizadorConPalo:
@@ -44,6 +51,8 @@ class RenderizadorConPalo:
             card_surface.get_height() - card_text.get_height() - self.padding_texto
         )
         card_surface.blit(card_text, text_position)
+
+        _dibujar_borde(card_surface, dimensiones)
 
         return card_surface
 
@@ -95,5 +104,7 @@ def render_back(dimensiones):
         usar_color_negro = not usar_color_negro
         pygame.draw.line(card_surface, color,
                          (min_x, y), (max_x, y))
+
+    _dibujar_borde(card_surface, dimensiones)
 
     return card_surface
