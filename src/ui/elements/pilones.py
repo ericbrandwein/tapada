@@ -1,7 +1,7 @@
 import pygame
 
 from collections.abc import Sequence
-from .cartas import card_renderer
+from ..cartas import card_renderer
 
 pygame.init()
 
@@ -73,6 +73,15 @@ class PilonUi(Sequence):
     @y.setter
     def y(self, num):
         self.rect.y = num
+        self._reorganizar_cartas()
+
+    @property
+    def x(self):
+        return self.rect.x
+
+    @x.setter
+    def x(self, num):
+        self.rect.x = num
         self._reorganizar_cartas()
 
     def _reorganizar_cartas(self):

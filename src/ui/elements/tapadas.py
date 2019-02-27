@@ -1,4 +1,4 @@
-from src.ui.pilones import PilonUi
+from .pilones import PilonUi
 
 
 class TapadaUi:
@@ -21,11 +21,7 @@ class TapadaUi:
         self.pilon.agregar_carta(carta_ui)
 
     def sacar_carta(self):
-        carta_sacada = self.pilon.pop()
-        if not self.pilon and self.cartas_tapadas:
-            nueva_carta = self.cartas_tapadas.pop()
-            self.pilon.agregar_carta(nueva_carta)
-        return carta_sacada
+        return self.pilon.pop()
 
     def set_orientation(self, up):
         if self.up_orientation != up:
@@ -41,7 +37,13 @@ class TapadaUi:
             else:
                 pilon_y += self.padding_entre_tapadas_y_destapadas
         self.pilon.y = pilon_y
+        self.pilon.x = self.rect.x
         self.pilon.render(surface)
 
     def check_collision(self, point):
         return self.pilon and self.pilon.check_collision(point)
+
+    def revelar_siguiente(self):
+        if not self.pilon and self.cartas_tapadas:
+            nueva_carta = self.cartas_tapadas.pop()
+            self.pilon.agregar_carta(nueva_carta)

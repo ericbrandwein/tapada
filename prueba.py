@@ -5,11 +5,7 @@ from src.juego.mazo.carta import Carta, Palo
 
 
 class ReferiPrueba(Referi):
-    def jugador_actual(self):
-        return 0
-
-    def ejecutar_jugada(self, accion_jugador):
-        """Ejecuta la jugada y devuelve True si es válida, y False sino."""
+    def puede_ejecutar_jugada(self, accion_jugador):
         return True
 
     def cartas_destapadas(self, indice_jugador):
@@ -27,4 +23,7 @@ class ReferiPrueba(Referi):
 
 juego = JuegoInteractivo(ReferiPrueba())
 juego.empezar()
-juego.correr_turno()
+jugador = 0
+while True:
+    juego.correr_turno(jugador)
+    jugador = (jugador + 1) % 2

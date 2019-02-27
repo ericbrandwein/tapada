@@ -11,9 +11,9 @@ class EscalerasContainer(Sequence):
     NO_COLLISION = -2
 
     escaleras = []
+    center = (0, 0)
 
-    def __init__(self, center, card_rect, color_placeholder, color_plus):
-        self.center = center
+    def __init__(self, card_rect, color_placeholder, color_plus):
         self.nueva_escalera_rect = card_rect.copy()
 
         self._draw_nueva_escalera_rect(
@@ -26,6 +26,10 @@ class EscalerasContainer(Sequence):
 
     def __len__(self):
         return len(self.escaleras)
+
+    def set_center(self, center):
+        self.center = center
+        self._actualizar_posiciones()
 
     def agregar_escalera(self, carta_ui):
         self.escaleras.append(carta_ui)
