@@ -4,14 +4,15 @@ import pygame
 
 from ..juego.accion_jugador import AccionJugador, Destino, Fuente
 from ..juego.mazo.carta import Carta, Palo
-from .elements.escaleras import EscalerasContainer
-from .elements.pilones import PilonesContainer
-from .elements.tapadas import TapadaUi
-from .elements.mazo import Mazo
 from .cartas import card_renderer
 from .cartas.carta_ui import CartaUi
-from ..utils.tapada_utils import jugador_contrario
+from .elements.escaleras import EscalerasContainer
+from .elements.mazo import Mazo
+from .elements.pilones import PilonesContainer
+from .elements.tapadas import TapadaUi
 from .layout_designer import LayoutDesigner
+from .layout_renderer import LayoutRenderer
+from ..utils import tapada_utils
 
 pygame.init()
 
@@ -41,10 +42,14 @@ class JuegoInteractivo:
 
         self.layout_designer = LayoutDesigner(
             size, card_size, self.mazo, self.escaleras_container,
-            self.pilon_containers, self.tapadas)
+            self.pilon_containers, self.tapadas
+        )
+        self.layout_renderer = LayoutRenderer(
+            size, self.mazo, self.pilon_containers,
+            self.escaleras_container, self.tapadas
+        )
 
     def empezar(self):
-        self.screen = pygame.display.set_mode(self.size)
 
         carta = Carta(Palo.DIAMANTE, 12)
         for i in range(6):
@@ -87,12 +92,14 @@ class JuegoInteractivo:
                         accion_jugador = self._release_card(mouse_pos)
                         should_render = True
 
+            self.layout_renderer.dragging_card = self.dragging_card
+
             if self.dragging_card:
                 self.dragging_card.rect.center = pygame.mouse.get_pos()
                 should_render = True
 
             if should_render:
-                self._render()
+                self.layout_renderer.render()
                 should_render = False
 
         return accion_jugador
@@ -129,50 +136,6 @@ class JuegoInteractivo:
         return [
             CartaUi(carta) for carta in cartas
         ]
-
-    def _render(self):
-        """Renderiza todos los elementos de la pantalla necesarios."""
-        self._render_background()
-        self._render_mazo()
-        self._render_pilones()
-        self._render_escaleras()
-        self._render_tapadas()
-        self._render_dragging_card()
-
-        pygame.display.flip()
-
-    def _render_background(self):
-        if not self.background_surface:
-            self.background_surface = pygame.Surface(self.size)
-            self.background_surface.fill(self.background_color)
-
-            for container in self.pilon_containers:
-                for pilon in container:
-                    self._render_placeholder_rect(
-                        self.background_surface, pilon.rect)
-
-        self.screen.blit(self.background_surface, (0, 0))
-
-    def _render_mazo(self):
-        self.mazo.render(self.screen)
-
-    def _render_pilones(self):
-        for container in self.pilon_containers:
-            container.render(self.screen)
-
-    def _render_escaleras(self):
-        self.escaleras_container.render(self.screen)
-
-    def _render_tapadas(self):
-        for tapada in self.tapadas:
-            tapada.render(self.screen)
-
-    def _render_dragging_card(self):
-        if self.dragging_card:
-            self.dragging_card.render(self.screen)
-
-    def _render_placeholder_rect(self, surface, rect):
-        surface.fill(self.color_placeholder, rect)
 
     def _drag_card_under(self, position):
         indice_pilon_colisionado = self._check_pilones_collision(position)
@@ -227,6 +190,9 @@ class JuegoInteractivo:
             else:
                 self.escaleras_container.agregar_carta(
                     indice_destino, self.dragging_card)
+        elif tipo_destino == Destino.TAPADA_CONTRARIA:
+            jugador_contrario = tapada_utils.jugador_contrario(self.jugador_actual)
+            self.tapadas[jugador_contrario].agregar_carta(self.dragging_card)
 
     def _return_dragging_card(self):
         if self.dragging_card_origin == Fuente.PILON:
@@ -247,10 +213,13 @@ class JuegoInteractivo:
         if escalera_colisionada != EscalerasContainer.NO_COLLISION:
             return Destino.ESCALERA, escalera_colisionada
 
+        jugador_contrario = tapada_utils.jugador_contrario(self.jugador_actual)
+        tapada_colisionada = self.tapadas[jugador_contrario].check_collision(
+            position)
+        if tapada_colisionada:
+            return Destino.TAPADA_CONTRARIA, 0
+
         return None
 
     def _check_pilones_collision(self, position):
         return self.pilon_containers[self.jugador_actual].check_collision(position)
-
-    def _jugador_contrario(self):
-        return (self.jugador_actual + 1) % 2
