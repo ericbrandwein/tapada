@@ -9,6 +9,7 @@ from ..juego.mazo.carta import Carta, Palo
 from .cartas import card_renderer
 from .cartas.carta_ui import CartaUi
 from .pilones import PilonesContainer
+from .tapadas import TapadaUi
 
 pygame.init()
 
@@ -35,6 +36,7 @@ class JuegoInteractivo:
         self._init_mazo()
         self._init_pilones()
         self._init_escaleras()
+        self._init_tapadas()
 
     def empezar(self):
         self.screen = pygame.display.set_mode(self.size)
@@ -101,6 +103,33 @@ class JuegoInteractivo:
             center, self.card_rect,
             self.color_placeholder, self.background_color)
 
+    def _init_tapadas(self):
+        tapada0_rect = self.card_rect.copy()
+        tapada0_rect.y = 0
+        tapada0_rect.x = 0
+        cartas_tapadas = self.referi.cartas_tapadas(0)
+        cartas_ui_tapadas = self._cartas_a_cartas_ui(cartas_tapadas)
+        cartas_destapadas = self.referi.cartas_destapadas(0)
+        cartas_ui_destapadas = self._cartas_a_cartas_ui(cartas_destapadas)
+        tapada0 = TapadaUi(tapada0_rect, self.card_rect,
+                           self.card_back_surface, cartas_ui_tapadas, cartas_ui_destapadas)
+
+        tapada1_rect = self.card_rect.copy()
+        tapada1_rect.x = self.width - self.card_rect.width
+        tapada1_rect.y = self.height - self.card_rect.height
+        cartas_tapadas = self.referi.cartas_tapadas(1)
+        cartas_ui_tapadas = self._cartas_a_cartas_ui(cartas_tapadas)
+        cartas_destapadas = self.referi.cartas_destapadas(1)
+        cartas_ui_destapadas = self._cartas_a_cartas_ui(cartas_destapadas)
+        tapada1 = TapadaUi(tapada1_rect, self.card_rect,
+                           self.card_back_surface, cartas_ui_tapadas, cartas_ui_destapadas)
+        self.tapadas = [tapada0, tapada1]
+
+    def _cartas_a_cartas_ui(self, cartas):
+        return [
+            CartaUi(carta) for carta in cartas
+        ]
+
     def _posicionar_pilones(self):
         card_height = self.card_rect.h
         midtop_pilones_arriba = (self.width / 2, self.height / 2 -
@@ -120,6 +149,7 @@ class JuegoInteractivo:
         self._render_mazo()
         self._render_pilones()
         self._render_escaleras()
+        self._render_tapadas()
         self._render_dragging_card()
 
         pygame.display.flip()
@@ -145,6 +175,10 @@ class JuegoInteractivo:
 
     def _render_escaleras(self):
         self.escaleras_container.render(self.screen)
+
+    def _render_tapadas(self):
+        for tapada in self.tapadas:
+            tapada.render(self.screen)
 
     def _render_dragging_card(self):
         if self.dragging_card:

@@ -66,6 +66,15 @@ class PilonUi(Sequence):
         self.rect.topleft = point
         self._reorganizar_cartas()
 
+    @property
+    def y(self):
+        return self.rect.y
+
+    @y.setter
+    def y(self, num):
+        self.rect.y = num
+        self._reorganizar_cartas()
+
     def _reorganizar_cartas(self):
         x = self.rect.x
         y = self.rect.y
