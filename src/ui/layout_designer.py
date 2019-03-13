@@ -4,21 +4,24 @@ from ..utils import tapada_utils
 class LayoutDesigner:
     ESPACIO_ENTRE_ESCALERAS_Y_PILONES = 48
     ESPACIO_ENTRE_PILONES_Y_TAPADA = 48
+    PADDING_MANO = 32
 
     def __init__(self, dimensiones, dimensiones_carta, mazo, escaleras_container,
-                 pilones_containers, tapadas):
+                 pilones_containers, tapadas, manos):
         self.dimensiones = self.ancho, self.alto = dimensiones
         self.ancho_carta, self.alto_carta = dimensiones_carta
         self.mazo = mazo
         self.escaleras_container = escaleras_container
         self.pilones_containers = pilones_containers
         self.tapadas = tapadas
+        self.manos = manos
 
     def design(self, jugador_actual):
         self._posicionar_mazo()
         self._posicionar_escaleras()
         self._posicionar_pilones(jugador_actual)
         self._posicionar_tapadas(jugador_actual)
+        self._posicionar_manos(jugador_actual)
 
     def _posicionar_mazo(self):
         ancho_mazo = self.mazo.rect.width
@@ -50,3 +53,11 @@ class LayoutDesigner:
             tapada.rect.y = pilones.rect.y
             up_orientation = jugador != jugador_actual
             tapada.set_orientation(up_orientation)
+
+    def _posicionar_manos(self, jugador_actual):
+        for jugador, mano in enumerate(self.manos):
+            mano.rect.right = self.ancho - self.PADDING_MANO
+            if jugador == jugador_actual:
+                mano.rect.bottom = self.alto - self.PADDING_MANO
+            else:
+                mano.rect.top = self.PADDING_MANO

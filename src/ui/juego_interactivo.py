@@ -13,6 +13,7 @@ from .elements.tapadas import TapadaUi
 from .layout_designer import LayoutDesigner
 from .layout_renderer import LayoutRenderer
 from ..utils import tapada_utils
+from .elements.mano import Mano
 
 pygame.init()
 
@@ -39,14 +40,15 @@ class JuegoInteractivo:
         self.pilon_containers = self._init_pilones()
         self.escaleras_container = self._init_escaleras()
         self.tapadas = self._init_tapadas()
+        self.manos = self._init_manos()
 
         self.layout_designer = LayoutDesigner(
             size, card_size, self.mazo, self.escaleras_container,
-            self.pilon_containers, self.tapadas
+            self.pilon_containers, self.tapadas, self.manos
         )
         self.layout_renderer = LayoutRenderer(
             size, self.mazo, self.pilon_containers,
-            self.escaleras_container, self.tapadas
+            self.escaleras_container, self.tapadas, self.manos
         )
 
     def empezar(self):
@@ -68,6 +70,16 @@ class JuegoInteractivo:
 
         carta_ui = CartaUi(carta)
         self.escaleras_container.agregar_escalera(carta_ui)
+
+        carta_ui = CartaUi(carta)
+        self.manos[1].agregar_cartas([carta_ui])
+        for i in range(2):
+            carta_ui = CartaUi(carta)
+            self.manos[0].agregar_cartas([carta_ui])
+
+        carta = Carta(Palo.DIAMANTE, 12)
+        carta_ui = CartaUi(carta)
+        self.manos[0].agregar_cartas([carta_ui])
 
     def correr_turno(self, jugador_actual):
         if self.jugador_actual != jugador_actual:
@@ -132,6 +144,11 @@ class JuegoInteractivo:
 
         return tapadas
 
+    def _init_manos(self):
+        return [
+            Mano(self.card_rect.size) for jugador in range(2)
+        ]
+
     def _cartas_a_cartas_ui(self, cartas):
         return [
             CartaUi(carta) for carta in cartas
@@ -191,7 +208,8 @@ class JuegoInteractivo:
                 self.escaleras_container.agregar_carta(
                     indice_destino, self.dragging_card)
         elif tipo_destino == Destino.TAPADA_CONTRARIA:
-            jugador_contrario = tapada_utils.jugador_contrario(self.jugador_actual)
+            jugador_contrario = tapada_utils.jugador_contrario(
+                self.jugador_actual)
             self.tapadas[jugador_contrario].agregar_carta(self.dragging_card)
 
     def _return_dragging_card(self):
