@@ -168,6 +168,15 @@ class JuegoInteractivo:
             if tapada.check_collision(position):
                 self.dragging_card_origin = Fuente.TAPADA
                 self.dragging_card = tapada.sacar_carta()
+            else:
+                mano = self.manos[self.jugador_actual]
+                for indice, carta in enumerate(mano):
+                    if carta.check_collision(position):
+                        mano.sacar_carta(indice)
+                        self.dragging_card_origin = Fuente.MANO
+                        self.dragging_card_origin_index = indice
+                        self.dragging_card = carta
+                        break
 
     def _release_card(self, position):
         destino = self._get_card_destination(position)
@@ -220,6 +229,10 @@ class JuegoInteractivo:
         elif self.dragging_card_origin == Fuente.TAPADA:
             tapada = self.tapadas[self.jugador_actual]
             tapada.agregar_carta(self.dragging_card)
+        elif self.dragging_card_origin == Fuente.MANO:
+            mano = self.manos[self.jugador_actual]
+            mano.devolver_carta(
+                self.dragging_card, self.dragging_card_origin_index)
 
     def _get_card_destination(self, position):
         pilon_colisionado = self._check_pilones_collision(position)

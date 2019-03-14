@@ -26,6 +26,9 @@ class Mano(Sequence):
     def sacar_carta(self, index):
         return self.cartas.pop(index)
 
+    def devolver_carta(self, carta, index):
+        self.cartas.insert(index, carta)
+
     def render(self, surface):
         self._posicionar_cartas()
         for carta in self.cartas:
