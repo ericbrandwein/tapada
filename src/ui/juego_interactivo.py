@@ -81,7 +81,10 @@ class JuegoInteractivo:
         carta_ui = CartaUi(carta)
         self.manos[0].agregar_cartas([carta_ui])
 
-    def correr_turno(self, jugador_actual):
+    def correr_turno(self, jugador_actual, nuevas_cartas):
+        nuevas_cartas_ui = self._cartas_a_cartas_ui(nuevas_cartas)
+        self.manos[jugador_actual].agregar_cartas(nuevas_cartas_ui)
+
         if self.jugador_actual != jugador_actual:
             self.jugador_actual = jugador_actual
             self.layout_designer.design(jugador_actual)
