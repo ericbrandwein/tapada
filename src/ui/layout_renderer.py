@@ -31,6 +31,15 @@ class LayoutRenderer:
 
         pygame.display.flip()
 
+    def mostrar_ganador(self, jugador):
+        font_filename = pygame.font.match_font('dejavusans')
+        font = pygame.font.Font(font_filename, 28)
+        texto = 'Ganó el jugador {}!'.format(jugador + 1)
+        texto_render = font.render(texto, True, (0, 0, 0))
+        self.screen.blit(texto_render, (self.size[0] / 2, self.size[1] / 2))
+
+        pygame.display.flip()
+
     def _render_background(self):
         if not self.background_surface:
             self.background_surface = pygame.Surface(self.size)

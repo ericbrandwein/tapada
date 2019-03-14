@@ -119,6 +119,10 @@ class JuegoInteractivo:
 
         return accion_jugador
 
+    def mostrar_ganador(self):
+        self.layout_renderer.mostrar_ganador(self.jugador_actual)
+
+
     def _init_mazo(self):
         mazo_rect = self.card_rect.copy()
         return Mazo(mazo_rect, self.card_back_surface)

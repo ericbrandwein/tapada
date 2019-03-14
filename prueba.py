@@ -24,7 +24,8 @@ class ReferiPrueba(Referi):
 juego = JuegoInteractivo(ReferiPrueba())
 juego.empezar()
 jugador = 0
-while True:
-    nuevas_cartas = [Carta(Palo.DIAMANTE, 12)]
-    juego.correr_turno(jugador, nuevas_cartas)
-    jugador = (jugador + 1) % 2
+# while True:
+nuevas_cartas = [Carta(Palo.DIAMANTE, 12)]
+juego.correr_turno(jugador, nuevas_cartas)
+jugador = (jugador + 1) % 2
+juego.mostrar_ganador()
